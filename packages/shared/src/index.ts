@@ -306,3 +306,116 @@ export interface StudioAnalytics {
   appointmentsByDay: Array<{ date: string; count: number }>;
   revenueByDay: Array<{ date: string; amount: number }>;
 }
+
+export enum FlashDesignStatus {
+  AVAILABLE = 'AVAILABLE',
+  SOLD = 'SOLD',
+  RESERVED = 'RESERVED',
+}
+
+export interface ArtistResidencyData {
+  id: string;
+  artistId: string;
+  studioId: string;
+  startDate: Date;
+  endDate?: Date;
+  isActive: boolean;
+  announcement?: string;
+  artist?: ArtistProfileData;
+  studio?: StudioData;
+  createdAt: Date;
+}
+
+export interface FlashDesignData {
+  id: string;
+  artistId: string;
+  title: string;
+  description?: string;
+  imageUrl: string;
+  price: number;
+  style: TattooStyle;
+  status: FlashDesignStatus;
+  licensingTerms?: string;
+  artist?: ArtistProfileData;
+  createdAt: Date;
+}
+
+export interface FlashPurchaseData {
+  id: string;
+  designId: string;
+  clientId: string;
+  amount: number;
+  purchasedAt: Date;
+}
+
+export interface ReviewData {
+  id: string;
+  appointmentId: string;
+  artistId: string;
+  clientId: string;
+  rating: number;
+  content?: string;
+  artistResponse?: string;
+  photos: ReviewPhotoData[];
+  client?: Pick<UserProfile, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>;
+  createdAt: Date;
+}
+
+export interface ReviewPhotoData {
+  id: string;
+  reviewId: string;
+  url: string;
+  createdAt: Date;
+}
+
+export interface WebhookData {
+  id: string;
+  userId: string;
+  url: string;
+  events: string[];
+  isActive: boolean;
+  createdAt: Date;
+}
+
+export interface ApiKeyData {
+  id: string;
+  userId: string;
+  name: string;
+  keyPrefix: string;
+  lastUsedAt?: Date;
+  expiresAt?: Date;
+  isActive: boolean;
+  createdAt: Date;
+}
+
+export interface StyleMatchResult {
+  detectedStyle: TattooStyle;
+  confidence: number;
+  recommendedArtists: ArtistProfileData[];
+}
+
+export interface SearchQuery {
+  q?: string;
+  style?: TattooStyle;
+  city?: string;
+  latitude?: number;
+  longitude?: number;
+  radiusKm?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  isAvailable?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+export const WEBHOOK_EVENTS = [
+  'appointment.created',
+  'appointment.confirmed',
+  'appointment.cancelled',
+  'appointment.completed',
+  'payment.succeeded',
+  'payment.refunded',
+  'review.created',
+] as const;
+
+export type WebhookEvent = (typeof WEBHOOK_EVENTS)[number];

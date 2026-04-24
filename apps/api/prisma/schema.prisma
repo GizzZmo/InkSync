@@ -75,6 +75,10 @@ model User {
   notificationPrefs NotificationPreference?
   googleCalendarToken GoogleCalendarToken?
   ownedStudios      Studio[]  @relation("StudioOwner")
+  flashPurchases    FlashPurchase[] @relation("FlashPurchases")
+  reviews           Review[]  @relation("ClientReviews")
+  webhooks          Webhook[] @relation("UserWebhooks")
+  apiKeys           ApiKey[]  @relation("UserApiKeys")
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -108,6 +112,8 @@ model ArtistProfile {
   city              String    @default("")
   state             String    @default("")
   country           String    @default("US")
+  latitude          Float?
+  longitude         Float?
   instagramHandle   String?
   tiktokHandle      String?
   websiteUrl        String?
@@ -121,6 +127,9 @@ model ArtistProfile {
   blockedDates      BlockedDate[]
   waiverTemplates   WaiverTemplate[]
   aftercares        Aftercare[]
+  residencies       ArtistResidency[]
+  flashDesigns      FlashDesign[]
+  reviews           Review[]
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -203,6 +212,7 @@ model Appointment {
   aftercare             Aftercare?
   chatRoom              ChatRoom?
   reminders             Reminder[]
+  review                Review?
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @updatedAt
 
@@ -402,6 +412,8 @@ model Studio {
   city        String
   state       String
   country     String          @default("US")
+  latitude    Float?
+  longitude   Float?
   phone       String?
   email       String?
   websiteUrl  String?
@@ -411,6 +423,7 @@ model Studio {
   artists     ArtistProfile[]
   appointments Appointment[]
   inventory   InventoryItem[]
+  residencies ArtistResidency[]
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
@@ -434,4 +447,142 @@ model InventoryItem {
 
   @@index([studioId])
   @@index([category])
+}
+
+model ArtistResidency {
+  id          String        @id @default(uuid())
+  artistId    String
+  artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  studioId    String
+  studio      Studio        @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  startDate   DateTime
+  endDate     DateTime?
+  isActive    Boolean       @default(true)
+  announcement String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([artistId])
+  @@index([studioId])
+  @@index([startDate])
+}
+
+enum FlashDesignStatus {
+  AVAILABLE
+  SOLD
+  RESERVED
+}
+
+model FlashDesign {
+  id           String            @id @default(uuid())
+  artistId     String
+  artist       ArtistProfile     @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  imageUrl     String
+  imageS3Key   String
+  price        Decimal
+  style        TattooStyle
+  status       FlashDesignStatus @default(AVAILABLE)
+  licensingTerms String?
+  purchases    FlashPurchase[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@index([artistId])
+  @@index([style])
+  @@index([status])
+}
+
+model FlashPurchase {
+  id            String      @id @default(uuid())
+  designId      String
+  design        FlashDesign @relation(fields: [designId], references: [id])
+  clientId      String
+  client        User        @relation("FlashPurchases", fields: [clientId], references: [id])
+  amount        Decimal
+  stripePaymentIntentId String? @unique
+  purchasedAt   DateTime    @default(now())
+
+  @@index([designId])
+  @@index([clientId])
+}
+
+model Review {
+  id            String         @id @default(uuid())
+  appointmentId String         @unique
+  appointment   Appointment    @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  artistId      String
+  artist        ArtistProfile  @relation(fields: [artistId], references: [id])
+  clientId      String
+  client        User           @relation("ClientReviews", fields: [clientId], references: [id])
+  rating        Int
+  content       String?
+  artistResponse String?
+  artistRespondedAt DateTime?
+  isModerated   Boolean        @default(false)
+  photos        ReviewPhoto[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([artistId])
+  @@index([clientId])
+  @@index([rating])
+}
+
+model ReviewPhoto {
+  id        String   @id @default(uuid())
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  url       String
+  s3Key     String
+  createdAt DateTime @default(now())
+
+  @@index([reviewId])
+}
+
+model Webhook {
+  id        String            @id @default(uuid())
+  userId    String
+  user      User              @relation("UserWebhooks", fields: [userId], references: [id], onDelete: Cascade)
+  url       String
+  secret    String
+  events    String[]
+  isActive  Boolean           @default(true)
+  deliveries WebhookDelivery[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([userId])
+}
+
+model WebhookDelivery {
+  id          String   @id @default(uuid())
+  webhookId   String
+  webhook     Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  event       String
+  payload     Json
+  responseStatus Int?
+  responseBody   String?
+  success     Boolean  @default(false)
+  attemptedAt DateTime @default(now())
+
+  @@index([webhookId])
+  @@index([event])
+}
+
+model ApiKey {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation("UserApiKeys", fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  keyHash     String   @unique
+  keyPrefix   String
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([keyHash])
 }
