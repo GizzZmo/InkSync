@@ -98,6 +98,7 @@ export type AuthStackParamList = {
 export type MainTabParamList = {
   Home: undefined;
   Explore: undefined;
+  Marketplace: undefined;
   Bookings: undefined;
   Messages: undefined;
   Profile: undefined;
@@ -115,9 +116,22 @@ export type BookingsStackParamList = {
   AppointmentDetail: { appointmentId: string };
   WaiverSign: { appointmentId: string; waiverId: string };
   Aftercare: { appointmentId: string };
+  ReviewSubmit: { appointmentId: string; artistName: string };
 };
 
 export type MessagesStackParamList = {
   ChatList: undefined;
   ChatRoom: { roomId: string; appointmentId: string };
+};
+
+export type MarketplaceStackParamList = {
+  Marketplace: undefined;
+  FlashDesignDetail: { designId: string };
+};
+
+export type ExploreStackParamList = {
+  ExploreScreen: undefined;
+  ArtistDetail: { artistId: string };
+  StyleMatch: undefined;
+  ARPreview: { designUrl?: string };
 };

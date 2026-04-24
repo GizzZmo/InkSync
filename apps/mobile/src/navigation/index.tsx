@@ -25,12 +25,21 @@ import ChatRoomScreen from '../screens/messages/ChatRoomScreen';
 import WaiverSignScreen from '../screens/bookings/WaiverSignScreen';
 import AftercareScreen from '../screens/aftercare/AftercareScreen';
 
+// Phase 3 & 4 screens
+import MarketplaceScreen from '../screens/marketplace/MarketplaceScreen';
+import FlashDesignDetailScreen from '../screens/marketplace/FlashDesignDetailScreen';
+import StyleMatchScreen from '../screens/explore/StyleMatchScreen';
+import ARPreviewScreen from '../screens/ar/ARPreviewScreen';
+import ReviewSubmitScreen from '../screens/bookings/ReviewSubmitScreen';
+
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const HomeStack = createNativeStackNavigator();
 const BookingsStack = createNativeStackNavigator();
 const MessagesStack = createNativeStackNavigator();
+const MarketplaceStack = createNativeStackNavigator();
+const ExploreStack = createNativeStackNavigator();
 
 function AuthNavigator() {
   return (
@@ -53,6 +62,26 @@ function HomeNavigator() {
   );
 }
 
+function ExploreNavigator() {
+  return (
+    <ExploreStack.Navigator>
+      <ExploreStack.Screen name="ExploreScreen" component={ExploreScreen} options={{ title: 'Explore' }} />
+      <ExploreStack.Screen name="ArtistDetail" component={ArtistDetailScreen} options={{ title: 'Artist Profile' }} />
+      <ExploreStack.Screen name="StyleMatch" component={StyleMatchScreen} options={{ title: 'AI Style Match' }} />
+      <ExploreStack.Screen name="ARPreview" component={ARPreviewScreen} options={{ title: 'AR Preview' }} />
+    </ExploreStack.Navigator>
+  );
+}
+
+function MarketplaceNavigator() {
+  return (
+    <MarketplaceStack.Navigator>
+      <MarketplaceStack.Screen name="Marketplace" component={MarketplaceScreen} options={{ title: 'Flash Marketplace' }} />
+      <MarketplaceStack.Screen name="FlashDesignDetail" component={FlashDesignDetailScreen} options={{ title: 'Design' }} />
+    </MarketplaceStack.Navigator>
+  );
+}
+
 function BookingsNavigator() {
   return (
     <BookingsStack.Navigator>
@@ -60,6 +89,7 @@ function BookingsNavigator() {
       <BookingsStack.Screen name="AppointmentDetail" component={AppointmentDetailScreen} options={{ title: 'Appointment' }} />
       <BookingsStack.Screen name="WaiverSign" component={WaiverSignScreen} options={{ title: 'Sign Waiver' }} />
       <BookingsStack.Screen name="Aftercare" component={AftercareScreen} options={{ title: 'Aftercare' }} />
+      <BookingsStack.Screen name="ReviewSubmit" component={ReviewSubmitScreen} options={{ title: 'Leave a Review' }} />
     </BookingsStack.Navigator>
   );
 }
@@ -77,7 +107,8 @@ function MainTabs() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Home" component={HomeNavigator} />
-      <Tab.Screen name="Explore" component={ExploreScreen} />
+      <Tab.Screen name="Explore" component={ExploreNavigator} />
+      <Tab.Screen name="Marketplace" component={MarketplaceNavigator} />
       <Tab.Screen name="Bookings" component={BookingsNavigator} />
       <Tab.Screen name="Messages" component={MessagesNavigator} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
@@ -102,3 +133,4 @@ export function AppNavigator() {
     </NavigationContainer>
   );
 }
+

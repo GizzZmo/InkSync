@@ -29,6 +29,13 @@ import notificationRoutes from './routes/notifications';
 import aftercareRoutes from './routes/aftercare';
 import studioRoutes from './routes/studios';
 import webhookRoutes from './routes/webhooks';
+import residencyRoutes from './routes/residencies';
+import marketplaceRoutes from './routes/marketplace';
+import styleMatchRoutes from './routes/styleMatch';
+import reviewRoutes from './routes/reviews';
+import searchRoutes from './routes/search';
+import apiKeyRoutes from './routes/apiKeys';
+import webhookManagementRoutes from './routes/webhookManagement';
 
 // Initialize Sentry before everything else
 initSentry();
@@ -86,6 +93,13 @@ app.use('/messages', messageRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/aftercare', aftercareRoutes);
 app.use('/studios', studioRoutes);
+app.use('/residencies', residencyRoutes);
+app.use('/marketplace', marketplaceRoutes);
+app.use('/style-match', styleMatchRoutes);
+app.use('/reviews', reviewRoutes);
+app.use('/search', searchRoutes);
+app.use('/developer/api-keys', apiKeyRoutes);
+app.use('/developer/webhooks', webhookManagementRoutes);
 
 // Sentry error handler must be before custom error handler
 app.use(Sentry.Handlers.errorHandler());

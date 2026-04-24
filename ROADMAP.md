@@ -124,37 +124,37 @@ This document is the single source of truth for the InkSync development plan. It
 ### Milestone 3.1 – AR Tattoo Preview
 | Status | Task |
 |--------|------|
-| 🔲 | ARKit (iOS) integration for body-surface tattoo overlay |
-| 🔲 | ARCore (Android) integration |
-| 🔲 | Skin-tone adaptive color rendering |
-| 🔲 | Design scaling and rotation on-skin controls |
-| 🔲 | Save and share AR preview as image/video |
+| 🚧 | ARKit (iOS) integration for body-surface tattoo overlay |
+| 🚧 | ARCore (Android) integration |
+| 🚧 | Skin-tone adaptive color rendering |
+| 🚧 | Design scaling and rotation on-skin controls |
+| 🚧 | Save and share AR preview as image/video |
 
 ### Milestone 3.2 – AI Style Match
 | Status | Task |
 |--------|------|
-| 🔲 | Client reference image upload |
-| 🔲 | ML model for tattoo style classification |
-| 🔲 | Artist recommendation engine based on style similarity |
-| 🔲 | "Similar artists" section on artist profile pages |
-| 🔲 | A/B test recommendation relevance |
+| 🚧 | Client reference image upload |
+| 🚧 | ML model for tattoo style classification |
+| 🚧 | Artist recommendation engine based on style similarity |
+| 🚧 | "Similar artists" section on artist profile pages |
+| 🚧 | A/B test recommendation relevance |
 
 ### Milestone 3.3 – Guest Artist & Residency Management
 | Status | Task |
 |--------|------|
-| 🔲 | Multi-studio support for artists with guest residencies |
-| 🔲 | Temporary artist-to-studio association with date ranges |
-| 🔲 | Shared booking calendar across residency studios |
-| 🔲 | Travel/residency announcement posts for artist followers |
+| 🚧 | Multi-studio support for artists with guest residencies |
+| 🚧 | Temporary artist-to-studio association with date ranges |
+| 🚧 | Shared booking calendar across residency studios |
+| 🚧 | Travel/residency announcement posts for artist followers |
 
 ### Milestone 3.4 – Flash & Design Marketplace
 | Status | Task |
 |--------|------|
-| 🔲 | Flash design listing by artists (price, availability, style) |
-| 🔲 | Client purchase and claim flow for flash designs |
-| 🔲 | Digital design ownership record (optional NFT mint via Polygon) |
-| 🔲 | "Sold" / "Available" status management |
-| 🔲 | Design licensing terms per listing |
+| 🚧 | Flash design listing by artists (price, availability, style) |
+| 🚧 | Client purchase and claim flow for flash designs |
+| 🚧 | Digital design ownership record (optional NFT mint via Polygon) |
+| 🚧 | "Sold" / "Available" status management |
+| 🚧 | Design licensing terms per listing |
 
 ---
 
@@ -165,38 +165,38 @@ This document is the single source of truth for the InkSync development plan. It
 ### Milestone 4.1 – Discovery & Search
 | Status | Task |
 |--------|------|
-| 🔲 | Global search with filters (style, location, price range, availability) |
-| 🔲 | Geolocation-based artist discovery ("Artists near me") |
-| 🔲 | ElasticSearch / Typesense integration for fast full-text search |
-| 🔲 | Trending artists and styles on explore page |
-| 🔲 | SEO-optimized public artist and studio pages |
+| 🚧 | Global search with filters (style, location, price range, availability) |
+| 🚧 | Geolocation-based artist discovery ("Artists near me") |
+| 🚧 | ElasticSearch / Typesense integration for fast full-text search |
+| 🚧 | Trending artists and styles on explore page |
+| 🚧 | SEO-optimized public artist and studio pages |
 
 ### Milestone 4.2 – Reviews & Trust
 | Status | Task |
 |--------|------|
-| 🔲 | Post-appointment review prompts (automated) |
-| 🔲 | Star rating + written review submission |
-| 🔲 | Photo-verified healed results (client uploads healed photo for review) |
-| 🔲 | Artist response to reviews |
-| 🔲 | Review moderation and abuse reporting |
+| 🚧 | Post-appointment review prompts (automated) |
+| 🚧 | Star rating + written review submission |
+| 🚧 | Photo-verified healed results (client uploads healed photo for review) |
+| 🚧 | Artist response to reviews |
+| �� | Review moderation and abuse reporting |
 
 ### Milestone 4.3 – API & Integrations
 | Status | Task |
 |--------|------|
-| 🔲 | Public REST API for third-party integrations |
-| 🔲 | Developer documentation (OpenAPI / Swagger) |
-| 🔲 | Integration with medical supply vendors (product catalog API) |
-| 🔲 | Webhook support for booking events |
-| 🔲 | API rate limiting and developer key management |
+| 🚧 | Public REST API for third-party integrations |
+| 🚧 | Developer documentation (OpenAPI / Swagger) |
+| 🚧 | Integration with medical supply vendors (product catalog API) |
+| 🚧 | Webhook support for booking events |
+| 🚧 | API rate limiting and developer key management |
 
 ### Milestone 4.4 – Performance & Reliability
 | Status | Task |
 |--------|------|
-| 🔲 | Load testing and performance benchmarks |
-| 🔲 | Database query optimization and indexing audit |
-| 🔲 | CDN configuration for global image delivery |
-| 🔲 | 99.9% uptime SLA with automated health checks |
-| 🔲 | Disaster recovery and backup procedures |
+| 🚧 | Load testing and performance benchmarks |
+| 🚧 | Database query optimization and indexing audit |
+| 🚧 | CDN configuration for global image delivery |
+| 🚧 | 99.9% uptime SLA with automated health checks |
+| 🚧 | Disaster recovery and backup procedures |
 
 ---
 
@@ -287,4 +287,4 @@ Items that are on the long-term horizon but not yet scheduled.
 
 ---
 
-*Last updated: 2025-04-20 · Maintained by the InkSync core team.*
+*Last updated: 2025-04-24 · Maintained by the InkSync core team.*
