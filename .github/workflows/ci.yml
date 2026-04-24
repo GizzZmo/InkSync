@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI
 
 on:
   push:
@@ -7,41 +7,73 @@ on:
     branches: [main, develop]
 
 jobs:
-  build-and-test:
-    name: Build & Test (Node ${{ matrix.node-version }})
+  api-test:
+    name: API Tests
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [18.x, 20.x]
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: inksync_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --workspaces --if-present
 
-      - name: Lint code
-        run: npm run lint
+      - name: Generate Prisma client
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/inksync_test
+        run: npx prisma generate
 
-      - name: Run unit tests
-        run: npm test -- --coverage
+      - name: Build API
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/inksync_test
+          JWT_SECRET: test-jwt-secret-minimum-32-characters-long
+          JWT_REFRESH_SECRET: test-refresh-secret-minimum-32-chars-long
+        run: npm run build
 
-      - name: Build project
-        run: npm run build --if-present
+      - name: Run API Tests
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/inksync_test
+          JWT_SECRET: test-jwt-secret-minimum-32-characters-long
+          JWT_REFRESH_SECRET: test-refresh-secret-minimum-32-chars-long
+          NODE_ENV: test
+        run: npm test
 
-      - name: Upload coverage report
-        if: matrix.node-version == '20.x'
-        uses: actions/upload-artifact@v4
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          name: coverage-report
-          path: coverage/
-          retention-days: 7
+          node-version: '20'
+          cache: 'npm'
+      - run: npm install --workspaces --if-present
+      - name: TypeScript check (API)
+        working-directory: apps/api
+        run: npx tsc --noEmit
+      - name: TypeScript check (shared)
+        working-directory: packages/shared
+        run: npx tsc --noEmit

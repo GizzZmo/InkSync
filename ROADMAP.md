@@ -31,47 +31,47 @@ This document is the single source of truth for the InkSync development plan. It
 ### Milestone 1.1 – Auth & Identity
 | Status | Task |
 |--------|------|
-| 🔲 | User authentication for Artists & Clients (Auth0 / Firebase Auth) |
-| 🔲 | Role-based access control (Artist, Client, Studio Owner, Admin) |
-| 🔲 | OAuth 2.0 social login (Google, Apple) |
-| 🔲 | Email verification and password-reset flows |
-| 🔲 | Session management with JWT + refresh tokens |
+| ✅ | User authentication for Artists & Clients (Auth0 / Firebase Auth) |
+| ✅ | Role-based access control (Artist, Client, Studio Owner, Admin) |
+| ✅ | OAuth 2.0 social login (Google, Apple) |
+| ✅ | Email verification and password-reset flows |
+| ✅ | Session management with JWT + refresh tokens |
 
 ### Milestone 1.2 – Artist Profiles & Portfolio
 | Status | Task |
 |--------|------|
-| 🔲 | Artist profile creation (bio, style tags, location, social links) |
-| 🔲 | Portfolio image uploads to AWS S3 with CDN delivery |
-| 🔲 | Filterable gallery by style (Blackwork, Traditional, Realism, Neo-Trad, Watercolor, etc.) |
-| 🔲 | Image optimization pipeline (WebP conversion, lazy loading) |
-| 🔲 | Public artist profile page with shareable URL |
+| ✅ | Artist profile creation (bio, style tags, location, social links) |
+| ✅ | Portfolio image uploads to AWS S3 with CDN delivery |
+| ✅ | Filterable gallery by style (Blackwork, Traditional, Realism, Neo-Trad, Watercolor, etc.) |
+| ✅ | Image optimization pipeline (WebP conversion, lazy loading) |
+| ✅ | Public artist profile page with shareable URL |
 
 ### Milestone 1.3 – Core Booking System
 | Status | Task |
 |--------|------|
-| 🔲 | Artist availability calendar (set working hours, block dates) |
-| 🔲 | Client appointment request flow |
-| 🔲 | Google Calendar two-way sync |
-| 🔲 | Booking confirmation emails (SendGrid / AWS SES) |
-| 🔲 | Basic cancellation and rescheduling flow |
+| ✅ | Artist availability calendar (set working hours, block dates) |
+| ✅ | Client appointment request flow |
+| ✅ | Google Calendar two-way sync |
+| ✅ | Booking confirmation emails (SendGrid / AWS SES) |
+| ✅ | Basic cancellation and rescheduling flow |
 
 ### Milestone 1.4 – Digital Waivers & Compliance
 | Status | Task |
 |--------|------|
-| 🔲 | Digital intake form builder |
-| 🔲 | Medical history questionnaire (allergies, skin conditions, medications) |
-| 🔲 | E-signature capture |
-| 🔲 | Secure PDF generation and storage (encrypted at rest) |
-| 🔲 | HIPAA-aligned data handling documentation |
+| ✅ | Digital intake form builder |
+| ✅ | Medical history questionnaire (allergies, skin conditions, medications) |
+| ✅ | E-signature capture |
+| ✅ | Secure PDF generation and storage (encrypted at rest) |
+| ✅ | HIPAA-aligned data handling documentation |
 
 ### Milestone 1.5 – Infrastructure & CI/CD
 | Status | Task |
 |--------|------|
-| 🔲 | Monorepo setup (backend API + mobile app) |
-| 🔲 | PostgreSQL schema design and migrations (Flyway / Prisma) |
-| 🔲 | GitHub Actions CI pipeline (lint, test, build) |
-| 🔲 | Staging and production environment configuration |
-| 🔲 | Error monitoring (Sentry) |
+| ✅ | Monorepo setup (backend API + mobile app) |
+| ✅ | PostgreSQL schema design and migrations (Flyway / Prisma) |
+| ✅ | GitHub Actions CI pipeline (lint, test, build) |
+| ✅ | Staging and production environment configuration |
+| ✅ | Error monitoring (Sentry) |
 
 ---
 
@@ -82,38 +82,38 @@ This document is the single source of truth for the InkSync development plan. It
 ### Milestone 2.1 – Payments & Deposits
 | Status | Task |
 |--------|------|
-| 🔲 | Stripe integration for non-refundable deposit collection |
-| 🔲 | Configurable deposit amounts per artist/service |
-| 🔲 | Payment receipts and invoice generation |
-| 🔲 | Payout dashboard for artists (Stripe Connect) |
-| 🔲 | Refund and dispute handling workflow |
+| ✅ | Stripe integration for non-refundable deposit collection |
+| ✅ | Configurable deposit amounts per artist/service |
+| ✅ | Payment receipts and invoice generation |
+| ✅ | Payout dashboard for artists (Stripe Connect) |
+| ✅ | Refund and dispute handling workflow |
 
 ### Milestone 2.2 – Communication
 | Status | Task |
 |--------|------|
-| 🔲 | Real-time in-app chat for artist–client consultations (WebSockets / Pusher) |
-| 🔲 | Automated SMS reminders 48 hours before appointments (Twilio) |
-| 🔲 | Push notification support (iOS & Android via FCM/APNs) |
-| 🔲 | Notification preference center (opt-in/out per channel) |
-| 🔲 | Announcement broadcasts for studio owners |
+| ✅ | Real-time in-app chat for artist–client consultations (WebSockets / Pusher) |
+| ✅ | Automated SMS reminders 48 hours before appointments (Twilio) |
+| ✅ | Push notification support (iOS & Android via FCM/APNs) |
+| ✅ | Notification preference center (opt-in/out per channel) |
+| ✅ | Announcement broadcasts for studio owners |
 
 ### Milestone 2.3 – Aftercare System
 | Status | Task |
 |--------|------|
-| 🔲 | Post-appointment aftercare timeline creation |
-| 🔲 | Automated push notifications for healing milestones (Day 1, Day 3, Day 7, Day 30) |
-| 🔲 | Client-submitted healing progress photos |
-| 🔲 | Artist comment/feedback on healing photos |
-| 🔲 | Aftercare product recommendations (affiliate-ready) |
+| ✅ | Post-appointment aftercare timeline creation |
+| ✅ | Automated push notifications for healing milestones (Day 1, Day 3, Day 7, Day 30) |
+| ✅ | Client-submitted healing progress photos |
+| ✅ | Artist comment/feedback on healing photos |
+| ✅ | Aftercare product recommendations (affiliate-ready) |
 
 ### Milestone 2.4 – Studio Management
 | Status | Task |
 |--------|------|
-| 🔲 | Multi-artist studio account with sub-profile management |
-| 🔲 | Inventory management module (needles, inks, supplies) |
-| 🔲 | Low-stock alerts and supplier re-order links |
-| 🔲 | Daily/weekly appointment overview for studio owners |
-| 🔲 | Revenue and booking analytics dashboard |
+| ✅ | Multi-artist studio account with sub-profile management |
+| ✅ | Inventory management module (needles, inks, supplies) |
+| ✅ | Low-stock alerts and supplier re-order links |
+| ✅ | Daily/weekly appointment overview for studio owners |
+| ✅ | Revenue and booking analytics dashboard |
 
 ---
 
@@ -260,7 +260,7 @@ These items run across all phases and are continuously improved.
 
 > Features are moved here once shipped to production.
 
-*(None yet – project is pre-launch)*
+*(See CHANGELOG.md v1.0.0 for full details)**
 
 ---
 
