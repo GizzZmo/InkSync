@@ -1,0 +1,437 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CLIENT
+  ARTIST
+  STUDIO_OWNER
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+enum TattooStyle {
+  TRADITIONAL
+  NEO_TRADITIONAL
+  REALISM
+  WATERCOLOR
+  BLACKWORK
+  TRIBAL
+  JAPANESE
+  GEOMETRIC
+  MINIMALIST
+  ILLUSTRATIVE
+  OTHER
+}
+
+enum WaiverStatus {
+  DRAFT
+  SIGNED
+  EXPIRED
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  SYSTEM
+}
+
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  passwordHash      String?
+  firstName         String
+  lastName          String
+  phone             String?
+  avatarUrl         String?
+  role              UserRole  @default(CLIENT)
+  emailVerified     Boolean   @default(false)
+  emailVerifyToken  String?
+  passwordResetToken String?
+  passwordResetExpiry DateTime?
+  refreshTokens     RefreshToken[]
+  artistProfile     ArtistProfile?
+  clientAppointments Appointment[] @relation("ClientAppointments")
+  sentMessages      Message[]
+  notificationPrefs NotificationPreference?
+  googleCalendarToken GoogleCalendarToken?
+  ownedStudios      Studio[]  @relation("StudioOwner")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([email])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}
+
+model ArtistProfile {
+  id                String    @id @default(uuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studioId          String?
+  studio            Studio?   @relation(fields: [studioId], references: [id])
+  bio               String    @default("")
+  styles            TattooStyle[]
+  hourlyRate        Decimal?
+  minimumDeposit    Decimal?
+  depositPercentage Decimal?  @default(20)
+  city              String    @default("")
+  state             String    @default("")
+  country           String    @default("US")
+  instagramHandle   String?
+  tiktokHandle      String?
+  websiteUrl        String?
+  yearsExperience   Int?
+  isAvailable       Boolean   @default(true)
+  stripeConnectId   String?
+  stripeConnectStatus String? 
+  portfolioImages   PortfolioImage[]
+  appointments      Appointment[] @relation("ArtistAppointments")
+  availability      Availability[]
+  blockedDates      BlockedDate[]
+  waiverTemplates   WaiverTemplate[]
+  aftercares        Aftercare[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([studioId])
+}
+
+model PortfolioImage {
+  id           String      @id @default(uuid())
+  artistId     String
+  artist       ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  url          String
+  thumbnailUrl String?
+  s3Key        String
+  style        TattooStyle
+  title        String?
+  description  String?
+  isPublic     Boolean     @default(true)
+  sortOrder    Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([artistId])
+  @@index([style])
+}
+
+model Availability {
+  id        String        @id @default(uuid())
+  artistId  String
+  artist    ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  dayOfWeek Int           // 0=Sun, 6=Sat
+  startTime String        // HH:mm
+  endTime   String        // HH:mm
+  isActive  Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([artistId, dayOfWeek])
+  @@index([artistId])
+}
+
+model BlockedDate {
+  id        String        @id @default(uuid())
+  artistId  String
+  artist    ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  date      DateTime
+  reason    String?
+  createdAt DateTime      @default(now())
+
+  @@index([artistId])
+  @@index([date])
+}
+
+model Appointment {
+  id                    String            @id @default(uuid())
+  clientId              String
+  client                User              @relation("ClientAppointments", fields: [clientId], references: [id])
+  artistId              String
+  artist                ArtistProfile     @relation("ArtistAppointments", fields: [artistId], references: [id])
+  studioId              String?
+  studio                Studio?           @relation(fields: [studioId], references: [id])
+  startTime             DateTime
+  endTime               DateTime
+  status                AppointmentStatus @default(PENDING)
+  serviceType           String
+  description           String?
+  estimatedHours        Decimal?
+  depositAmount         Decimal?
+  depositPaid           Boolean           @default(false)
+  totalAmount           Decimal?
+  paymentStatus         PaymentStatus     @default(PENDING)
+  googleCalendarEventId String?
+  notes                 String?
+  cancelReason          String?
+  cancelledAt           DateTime?
+  confirmedAt           DateTime?
+  completedAt           DateTime?
+  payments              Payment[]
+  waiver                Waiver?
+  aftercare             Aftercare?
+  chatRoom              ChatRoom?
+  reminders             Reminder[]
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  @@index([clientId])
+  @@index([artistId])
+  @@index([status])
+  @@index([startTime])
+}
+
+model WaiverTemplate {
+  id        String        @id @default(uuid())
+  artistId  String
+  artist    ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  version   Int           @default(1)
+  isActive  Boolean       @default(true)
+  waivers   Waiver[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([artistId])
+}
+
+model Waiver {
+  id             String        @id @default(uuid())
+  appointmentId  String        @unique
+  appointment    Appointment   @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  templateId     String
+  template       WaiverTemplate @relation(fields: [templateId], references: [id])
+  clientId       String
+  signatureData  String?       // base64 PNG
+  medicalHistory Json?
+  signedAt       DateTime?
+  status         WaiverStatus  @default(DRAFT)
+  pdfS3Key       String?
+  pdfUrl         String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([appointmentId])
+  @@index([clientId])
+}
+
+model Payment {
+  id                     String        @id @default(uuid())
+  appointmentId          String
+  appointment            Appointment   @relation(fields: [appointmentId], references: [id])
+  amount                 Decimal
+  currency               String        @default("usd")
+  status                 PaymentStatus @default(PENDING)
+  stripePaymentIntentId  String?       @unique
+  stripeChargeId         String?
+  stripeTransferId       String?
+  refundId               String?
+  refundAmount           Decimal?
+  refundReason           String?
+  metadata               Json?
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+
+  @@index([appointmentId])
+  @@index([stripePaymentIntentId])
+}
+
+model GoogleCalendarToken {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  calendarId   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ChatRoom {
+  id            String      @id @default(uuid())
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  messages      Message[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Message {
+  id        String      @id @default(uuid())
+  roomId    String
+  room      ChatRoom    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User        @relation(fields: [senderId], references: [id])
+  content   String
+  type      MessageType @default(TEXT)
+  mediaUrl  String?
+  mediaS3Key String?
+  readAt    DateTime?
+  createdAt DateTime    @default(now())
+
+  @@index([roomId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+model NotificationPreference {
+  id                   String  @id @default(uuid())
+  userId               String  @unique
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailEnabled         Boolean @default(true)
+  smsEnabled           Boolean @default(true)
+  pushEnabled          Boolean @default(true)
+  appointmentReminders Boolean @default(true)
+  marketingEmails      Boolean @default(false)
+  aftercareReminders   Boolean @default(true)
+  paymentNotifications Boolean @default(true)
+  fcmToken             String?
+  updatedAt            DateTime @updatedAt
+}
+
+model Reminder {
+  id            String      @id @default(uuid())
+  appointmentId String
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  type          String      // 'SMS' | 'EMAIL' | 'PUSH'
+  scheduledAt   DateTime
+  sentAt        DateTime?
+  message       String
+  status        String      @default("PENDING")
+  createdAt     DateTime    @default(now())
+
+  @@index([appointmentId])
+  @@index([scheduledAt])
+  @@index([status])
+}
+
+model Aftercare {
+  id            String             @id @default(uuid())
+  appointmentId String             @unique
+  appointment   Appointment        @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  artistId      String
+  artist        ArtistProfile      @relation(fields: [artistId], references: [id])
+  instructions  String
+  milestones    AftercareMilestone[]
+  photos        AftercarePhoto[]
+  products      AftercareProduct[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([appointmentId])
+  @@index([artistId])
+}
+
+model AftercareMilestone {
+  id          String    @id @default(uuid())
+  aftercareId String
+  aftercare   Aftercare @relation(fields: [aftercareId], references: [id], onDelete: Cascade)
+  dayNumber   Int
+  title       String
+  instructions String
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([aftercareId])
+}
+
+model AftercarePhoto {
+  id            String    @id @default(uuid())
+  aftercareId   String
+  aftercare     Aftercare @relation(fields: [aftercareId], references: [id], onDelete: Cascade)
+  url           String
+  s3Key         String
+  dayNumber     Int
+  artistComment String?
+  uploadedAt    DateTime  @default(now())
+
+  @@index([aftercareId])
+}
+
+model AftercareProduct {
+  id          String    @id @default(uuid())
+  aftercareId String
+  aftercare   Aftercare @relation(fields: [aftercareId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  affiliateUrl String?
+  createdAt   DateTime  @default(now())
+}
+
+model Studio {
+  id          String          @id @default(uuid())
+  ownerId     String
+  owner       User            @relation("StudioOwner", fields: [ownerId], references: [id])
+  name        String
+  description String?
+  address     String
+  city        String
+  state       String
+  country     String          @default("US")
+  phone       String?
+  email       String?
+  websiteUrl  String?
+  logoUrl     String?
+  logoS3Key   String?
+  isActive    Boolean         @default(true)
+  artists     ArtistProfile[]
+  appointments Appointment[]
+  inventory   InventoryItem[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([ownerId])
+}
+
+model InventoryItem {
+  id                String   @id @default(uuid())
+  studioId          String
+  studio            Studio   @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  name              String
+  category          String
+  quantity          Int      @default(0)
+  lowStockThreshold Int      @default(5)
+  unit              String   @default("unit")
+  costPerUnit       Decimal?
+  supplier          String?
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([studioId])
+  @@index([category])
+}
