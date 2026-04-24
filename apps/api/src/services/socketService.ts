@@ -3,7 +3,11 @@ import { Server as SocketServer, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../config/database';
 import { env } from '../config/env';
-import { TokenPayload } from '@inksync/shared';
+import { TokenPayload, MessageType } from '@inksync/shared';
+
+interface AuthenticatedSocket extends Socket {
+  user: TokenPayload;
+}
 
 let io: SocketServer;
 
@@ -24,7 +28,7 @@ export function initSocketServer(httpServer: HttpServer): SocketServer {
     }
     try {
       const payload = jwt.verify(token, env.JWT_SECRET) as TokenPayload;
-      (socket as any).user = payload;
+      (socket as AuthenticatedSocket).user = payload;
       next();
     } catch {
       next(new Error('Invalid token'));
@@ -32,7 +36,7 @@ export function initSocketServer(httpServer: HttpServer): SocketServer {
   });
 
   io.on('connection', (socket: Socket) => {
-    const user = (socket as any).user as TokenPayload;
+    const user = (socket as AuthenticatedSocket).user;
     console.log(`Socket connected: ${user.userId}`);
 
     socket.on('join_room', async (roomId: string) => {
@@ -70,7 +74,7 @@ export function initSocketServer(httpServer: HttpServer): SocketServer {
             roomId: data.roomId,
             senderId: user.userId,
             content: data.content,
-            type: (data.type as any) ?? 'TEXT',
+            type: (data.type as MessageType) ?? MessageType.TEXT,
           },
           include: {
             sender: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },

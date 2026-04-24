@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import * as waiverService from '../services/waiverService';
 import { getPresignedDownloadUrl } from '../utils/s3Upload';
+import { prisma } from '../config/database';
 
 const createTemplateSchema = z.object({
   title: z.string().min(1),
@@ -37,9 +38,7 @@ export async function getTemplates(req: Request, res: Response, next: NextFuncti
 export async function createTemplate(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const data = createTemplateSchema.parse(req.body);
-    const artist = await import('../config/database').then(({ prisma }) =>
-      prisma.artistProfile.findUnique({ where: { userId: req.user!.userId } })
-    );
+    const artist = await prisma.artistProfile.findUnique({ where: { userId: req.user!.userId } });
     if (!artist) { res.status(404).json({ success: false, error: 'Artist profile not found' }); return; }
     const template = await waiverService.createWaiverTemplate(artist.id, req.user!.userId, data);
     res.status(201).json({ success: true, data: template });
