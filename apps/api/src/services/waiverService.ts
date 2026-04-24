@@ -4,6 +4,17 @@ import { WaiverStatus } from '@inksync/shared';
 import PDFDocument from 'pdfkit';
 import { uploadToS3 } from '../utils/s3Upload';
 
+interface WaiverForPdf {
+  template?: { title?: string; content?: string } | null;
+  appointment?: {
+    client?: { firstName?: string; lastName?: string } | null;
+    artist?: { user?: { firstName?: string; lastName?: string } | null } | null;
+  } | null;
+  signedAt?: Date | null;
+  medicalHistory?: Record<string, unknown> | null;
+  signatureData?: string | null;
+}
+
 export async function getWaiverTemplates(artistId: string) {
   return prisma.waiverTemplate.findMany({
     where: { artistId, isActive: true },
@@ -119,7 +130,7 @@ export async function getWaiver(waiverId: string, userId: string) {
   return waiver;
 }
 
-async function generateAndStorePdf(waiverId: string, waiver: any): Promise<void> {
+async function generateAndStorePdf(waiverId: string, waiver: WaiverForPdf): Promise<void> {
   const pdf = await generateWaiverPdf(waiver);
   const { s3Key, url } = await uploadToS3(pdf, 'application/pdf', `waivers/${waiverId}`);
   await prisma.waiver.update({
@@ -128,7 +139,7 @@ async function generateAndStorePdf(waiverId: string, waiver: any): Promise<void>
   });
 }
 
-export async function generateWaiverPdf(waiver: any): Promise<Buffer> {
+export async function generateWaiverPdf(waiver: WaiverForPdf): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 50 });
     const chunks: Buffer[] = [];

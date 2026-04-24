@@ -4,6 +4,18 @@ import { sendEmail } from '../utils/email';
 import twilio from 'twilio';
 import { env } from '../config/env';
 
+interface ReminderWithAppointment {
+  id: string;
+  type: string;
+  message: string;
+  appointment: {
+    client: {
+      email: string;
+      phone?: string | null;
+    };
+  };
+}
+
 let twilioClient: ReturnType<typeof twilio> | null = null;
 
 function getTwilioClient() {
@@ -62,7 +74,7 @@ async function processScheduledReminders(): Promise<void> {
   }
 }
 
-async function sendReminder(reminder: any): Promise<void> {
+async function sendReminder(reminder: ReminderWithAppointment): Promise<void> {
   const { appointment } = reminder;
   const clientPhone = appointment.client.phone;
 
