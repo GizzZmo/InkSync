@@ -228,7 +228,7 @@ export interface AftercareData {
   clientId: string;
   instructions: string;
   milestones: AftercareMilestone[];
-  photos: AftercarePhoData[];
+  photos: AftercarePhotoData[];
   createdAt: Date;
 }
 
@@ -242,7 +242,7 @@ export interface AftercareMilestone {
   completedAt?: Date;
 }
 
-export interface AftercarePhoData {
+export interface AftercarePhotoData {
   id: string;
   aftercareId: string;
   url: string;
