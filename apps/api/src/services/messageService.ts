@@ -1,6 +1,7 @@
 import { prisma } from '../config/database';
 import { AppError } from '../middleware/errorHandler';
 import { getPaginationOptions, buildPaginationMeta } from '../utils/pagination';
+import { MessageType } from '@inksync/shared';
 
 export async function getMessages(roomId: string, userId: string, query: {
   page?: number;
@@ -55,7 +56,7 @@ export async function sendMessage(roomId: string, senderId: string, data: {
       roomId,
       senderId,
       content: data.content,
-      type: (data.type as any) ?? 'TEXT',
+      type: (data.type as MessageType) ?? MessageType.TEXT,
     },
     include: {
       sender: { select: { id: true, firstName: true, lastName: true, avatarUrl: true } },
