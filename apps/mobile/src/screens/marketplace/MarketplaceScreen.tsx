@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { apiClient } from '../../services/apiClient';
@@ -21,7 +21,7 @@ export default function MarketplaceScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(true);
   const [selectedStyle, setSelectedStyle] = useState<TattooStyle | undefined>();
 
-  const fetchDesigns = async () => {
+  const fetchDesigns = useCallback(async () => {
     setLoading(true);
     try {
       const res = await apiClient.get('/marketplace', {
@@ -33,9 +33,9 @@ export default function MarketplaceScreen({ navigation }: Props) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedStyle]);
 
-  useEffect(() => { fetchDesigns(); }, [selectedStyle]);
+  useEffect(() => { fetchDesigns(); }, [fetchDesigns]);
 
   return (
     <View style={styles.container}>

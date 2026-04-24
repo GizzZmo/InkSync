@@ -31,8 +31,12 @@ export async function searchArtists(query: {
     ...(query.style ? { styles: { has: query.style } } : {}),
     ...(query.city ? { city: { contains: query.city, mode: 'insensitive' } } : {}),
     ...(query.isAvailable !== undefined ? { isAvailable: query.isAvailable } : {}),
-    ...(query.minPrice ? { hourlyRate: { gte: query.minPrice } } : {}),
-    ...(query.maxPrice ? { hourlyRate: { ...(query.minPrice ? { gte: query.minPrice } : {}), lte: query.maxPrice } } : {}),
+    ...(query.minPrice || query.maxPrice ? {
+      hourlyRate: {
+        ...(query.minPrice ? { gte: query.minPrice } : {}),
+        ...(query.maxPrice ? { lte: query.maxPrice } : {}),
+      },
+    } : {}),
     ...(query.q ? {
       OR: [
         { bio: { contains: query.q, mode: 'insensitive' } },
