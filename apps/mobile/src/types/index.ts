@@ -101,7 +101,15 @@ export type MainTabParamList = {
   Marketplace: undefined;
   Bookings: undefined;
   Messages: undefined;
+  Community: undefined;
   Profile: undefined;
+};
+
+export type CommunityStackParamList = {
+  CommunityScreen: undefined;
+  BlogPost: { postId: string };
+  EventDetail: { eventId: string };
+  CourseDetail: { courseId: string };
 };
 
 export type HomeStackParamList = {

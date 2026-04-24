@@ -36,11 +36,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Comprehensive project roadmap (`ROADMAP.md`) with 5 phases and 20+ milestones
-- GitHub Actions CI pipeline for Node.js 18.x and 20.x
-- Updated `README.md` with full tech stack, installation guide, and contributing instructions
+
+#### Phase 5 – Maturity & Ecosystem
+
+**5.1 – Enterprise & Chains**
+- `EnterpriseAccount`, `EnterpriseBrand`, `EnterpriseMembership` Prisma models for franchise/chain management
+- Enterprise API (`/enterprise`): CRUD, brand management (logos, colors, service menu, widget config), studio membership, cross-location analytics
+- Public white-label widget config endpoint (`/enterprise/widget/:slug`)
+
+**5.2 – Community & Education**
+- `BlogPost`, `Event`, `ApprenticeshipListing`, `Course`, `CourseLesson`, `CourseEnrollment` Prisma models
+- Community API (`/community`): artist blog, convention/event calendar, apprenticeship listings, InkSync Academy courses with enrollment and lesson tracking
+- Mobile `CommunityScreen` with tabbed navigation across Blog, Events, Apprenticeships and Academy
+
+**5.3 – Internationalization**
+- `UserLocale` Prisma model for per-user language, currency, and timezone preferences
+- i18n API (`/i18n`): list supported locales, get/update user locale preference
+- Multi-currency support helpers (`toStripeAmount`/`fromStripeAmount`) for zero-decimal currency handling
+- Mobile i18n module with `i18n-js`, locales for EN, ES, DE, FR, PT, JA
+
+**5.4 – Platform Health & Governance**
+- `ContentReport`, `ArtistBadge`, `DataExportRequest` Prisma models
+- Governance API (`/governance`): content reporting with admin review workflow, artist verification/badge request and approval, GDPR data export request, full data download endpoint, GDPR-compliant account deletion (PII anonymization)
+- Mobile `GovernanceScreen` for badge requests, data export management, and account deletion
+- Mobile `ReportContentModal` reusable component for content reporting
+
+#### Infrastructure
+- Fixed pre-existing `tsconfig.json` `baseUrl` deprecation by adding `ignoreDeprecations: "6.0"`
 
 ---
+
 
 ## Types of Changes
 

@@ -79,6 +79,12 @@ model User {
   reviews           Review[]  @relation("ClientReviews")
   webhooks          Webhook[] @relation("UserWebhooks")
   apiKeys           ApiKey[]  @relation("UserApiKeys")
+  ownedEnterprises  EnterpriseAccount[] @relation("EnterpriseOwner")
+  organizedEvents   Event[]   @relation("EventOrganizer")
+  courseEnrollments CourseEnrollment[] @relation("CourseEnrollments")
+  userLocale        UserLocale?
+  contentReports    ContentReport[] @relation("ContentReports")
+  dataExportRequests DataExportRequest[] @relation("DataExportRequests")
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -130,6 +136,10 @@ model ArtistProfile {
   residencies       ArtistResidency[]
   flashDesigns      FlashDesign[]
   reviews           Review[]
+  blogPosts         BlogPost[]
+  apprenticeships   ApprenticeshipListing[]
+  courses           Course[]
+  badges            ArtistBadge[]
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -424,6 +434,7 @@ model Studio {
   appointments Appointment[]
   inventory   InventoryItem[]
   residencies ArtistResidency[]
+  enterpriseMemberships EnterpriseMembership[]
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
@@ -585,4 +596,310 @@ model ApiKey {
 
   @@index([userId])
   @@index([keyHash])
+}
+
+// ─────────────────────────────────────────────
+// Phase 5.1 – Enterprise & Chains
+// ─────────────────────────────────────────────
+
+model EnterpriseAccount {
+  id             String               @id @default(uuid())
+  ownerId        String
+  owner          User                 @relation("EnterpriseOwner", fields: [ownerId], references: [id])
+  name           String
+  slug           String               @unique
+  tier           String               @default("enterprise") // enterprise | franchise
+  isActive       Boolean              @default(true)
+  brand          EnterpriseBrand?
+  members        EnterpriseMembership[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@index([ownerId])
+  @@index([slug])
+}
+
+model EnterpriseBrand {
+  id                String            @id @default(uuid())
+  enterpriseId      String            @unique
+  enterprise        EnterpriseAccount @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  logoUrl           String?
+  logoS3Key         String?
+  primaryColor      String?
+  secondaryColor    String?
+  fontFamily        String?
+  serviceMenu       Json?             // array of { name, price, durationMinutes }
+  depositPolicy     String?
+  cancellationPolicy String?
+  widgetEnabled     Boolean           @default(false)
+  widgetOrigins     String[]          // allowed CORS origins for embed widget
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}
+
+model EnterpriseMembership {
+  id           String            @id @default(uuid())
+  enterpriseId String
+  enterprise   EnterpriseAccount @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  studioId     String
+  studio       Studio            @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  role         String            @default("member") // owner | admin | member
+  joinedAt     DateTime          @default(now())
+
+  @@unique([enterpriseId, studioId])
+  @@index([enterpriseId])
+  @@index([studioId])
+}
+
+// ─────────────────────────────────────────────
+// Phase 5.2 – Community & Education
+// ─────────────────────────────────────────────
+
+enum BlogPostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model BlogPost {
+  id          String         @id @default(uuid())
+  authorId    String
+  author      ArtistProfile  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title       String
+  slug        String         @unique
+  summary     String?
+  content     String
+  coverImageUrl String?
+  coverS3Key  String?
+  tags        String[]
+  status      BlogPostStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([authorId])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+enum EventType {
+  CONVENTION
+  EXPO
+  WORKSHOP
+  GUEST_SPOT
+  OTHER
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  organizerId String
+  organizer   User      @relation("EventOrganizer", fields: [organizerId], references: [id])
+  title       String
+  description String?
+  eventType   EventType @default(CONVENTION)
+  city        String
+  state       String?
+  country     String    @default("US")
+  venue       String?
+  address     String?
+  startDate   DateTime
+  endDate     DateTime
+  websiteUrl  String?
+  imageUrl    String?
+  imageS3Key  String?
+  isPublished Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([organizerId])
+  @@index([startDate])
+  @@index([eventType])
+}
+
+model ApprenticeshipListing {
+  id           String        @id @default(uuid())
+  artistId     String
+  artist       ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  title        String
+  description  String
+  requirements String?
+  duration     String?       // e.g. "6 months", "1 year"
+  isPaid       Boolean       @default(false)
+  compensation String?
+  city         String
+  state        String?
+  country      String        @default("US")
+  isOpen       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([artistId])
+  @@index([isOpen])
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Course {
+  id           String           @id @default(uuid())
+  instructorId String
+  instructor   ArtistProfile    @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  title        String
+  description  String
+  coverImageUrl String?
+  coverS3Key   String?
+  price        Decimal          @default(0)
+  isFree       Boolean          @default(false)
+  tags         String[]
+  status       CourseStatus     @default(DRAFT)
+  publishedAt  DateTime?
+  lessons      CourseLesson[]
+  enrollments  CourseEnrollment[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([instructorId])
+  @@index([status])
+}
+
+model CourseLesson {
+  id          String   @id @default(uuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  content     String
+  videoUrl    String?
+  sortOrder   Int      @default(0)
+  durationMin Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([courseId])
+}
+
+model CourseEnrollment {
+  id          String   @id @default(uuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation("CourseEnrollments", fields: [userId], references: [id], onDelete: Cascade)
+  completedAt DateTime?
+  enrolledAt  DateTime @default(now())
+
+  @@unique([courseId, userId])
+  @@index([courseId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// Phase 5.3 – Internationalization
+// ─────────────────────────────────────────────
+
+model UserLocale {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  language     String   @default("en") // BCP-47 tag: en, es, de, fr, pt, ja
+  currency     String   @default("USD") // ISO 4217
+  timezone     String   @default("UTC")
+  rtlEnabled   Boolean  @default(false)
+  updatedAt    DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────
+// Phase 5.4 – Platform Health & Governance
+// ─────────────────────────────────────────────
+
+enum ReportTargetType {
+  REVIEW
+  BLOG_POST
+  ARTIST_PROFILE
+  MESSAGE
+  FLASH_DESIGN
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
+
+model ContentReport {
+  id           String           @id @default(uuid())
+  reporterId   String
+  reporter     User             @relation("ContentReports", fields: [reporterId], references: [id])
+  targetType   ReportTargetType
+  targetId     String
+  reason       String
+  details      String?
+  status       ReportStatus     @default(PENDING)
+  reviewedBy   String?
+  reviewedAt   DateTime?
+  resolution   String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([reporterId])
+  @@index([targetType, targetId])
+  @@index([status])
+}
+
+enum BadgeType {
+  VERIFIED_ARTIST
+  TOP_RATED
+  FEATURED
+  SAFETY_TRAINED
+  APPRENTICE_CERTIFIED
+}
+
+enum BadgeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REVOKED
+}
+
+model ArtistBadge {
+  id          String        @id @default(uuid())
+  artistId    String
+  artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  badgeType   BadgeType
+  status      BadgeStatus   @default(PENDING)
+  issuedAt    DateTime?
+  expiresAt   DateTime?
+  notes       String?
+  reviewedBy  String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([artistId, badgeType])
+  @@index([artistId])
+  @@index([status])
+}
+
+enum DataExportStatus {
+  REQUESTED
+  PROCESSING
+  READY
+  DOWNLOADED
+  EXPIRED
+}
+
+model DataExportRequest {
+  id            String           @id @default(uuid())
+  userId        String
+  user          User             @relation("DataExportRequests", fields: [userId], references: [id], onDelete: Cascade)
+  status        DataExportStatus @default(REQUESTED)
+  s3Key         String?
+  downloadUrl   String?
+  expiresAt     DateTime?
+  requestedAt   DateTime         @default(now())
+  completedAt   DateTime?
+
+  @@index([userId])
+  @@index([status])
 }
