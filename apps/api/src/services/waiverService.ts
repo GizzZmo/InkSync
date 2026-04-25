@@ -12,7 +12,7 @@ interface WaiverForPdf {
     artist?: { user?: { firstName?: string; lastName?: string } | null } | null;
   } | null;
   signedAt?: Date | null;
-  medicalHistory?: Prisma.JsonValue | null;
+  medicalHistory?: Prisma.JsonValue;
   signatureData?: string | null;
 }
 
