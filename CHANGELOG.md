@@ -37,6 +37,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Phase 3 – Innovation
+
+**3.1 – AR Tattoo Preview**
+- `ARPreviewScreen` with design overlay, opacity/size controls, and save action
+- AR preview entry point from artist profile pages (launches with artist's portfolio image)
+- Accessible from both the Explore stack and artist detail pages
+
+**3.2 – AI Style Match**
+- `styleMatchService`: keyword-based tattoo style classifier with confidence scoring
+- `StyleMatchScreen`: multi-line description input → detected style banner → recommended artist list
+- "Similar Artists" section on artist profile pages (powered by style-match recommendation engine)
+- Style-match API endpoint (`POST /style-match/match`)
+
+**3.3 – Guest Artist & Residency Management**
+- `ArtistResidency` Prisma model for multi-studio guest residencies with date ranges and announcements
+- Residency API (`/residencies`): full CRUD with artist/studio association
+- Artist profile pages now display active residencies with studio name, dates, and announcements
+
+**3.4 – Flash & Design Marketplace**
+- `FlashDesign` and `FlashPurchase` Prisma models
+- Marketplace API (`/marketplace`): design listing with style/status filters, S3 presign, purchase and ownership claim
+- `MarketplaceScreen`: grid of available flash designs with style filter chips
+- `FlashDesignDetailScreen`: full design view with licensing terms, artist link, and purchase CTA
+
+#### Phase 4 – Scaling
+
+**4.1 – Discovery & Search**
+- `searchService`: full-text artist search with style, city, price range, geolocation (haversine distance), and availability filters
+- Search API (`/search/artists`, `/search/trending`)
+- Rebuilt `ExploreScreen` using search API with: text search, style chips, price range filter panel, "Artists Near Me" geolocation button, and trending artists section
+- Trending artists ranked by appointment activity over the last 30 days
+
+**4.2 – Reviews & Trust**
+- `Review` and `ReviewPhoto` Prisma models with moderation flag
+- Reviews API (`/reviews`): post-appointment review creation, artist response, healed photo upload (S3 presign), and abuse reporting
+- `ReviewSubmitScreen`: star rating + written review submission for completed appointments
+- `AppointmentDetailScreen`: "Leave a Review" button appears automatically when appointment status is `COMPLETED`
+- Artist profile pages now display review feed with star ratings, written reviews, and artist responses
+
+**4.3 – API & Integrations**
+- `ApiKey` Prisma model with SHA-256 hashed key storage and prefix lookup
+- Developer API key management (`/developer/api-keys`): create, list, revoke
+- `Webhook` and `WebhookDelivery` Prisma models
+- Webhook management (`/developer/webhooks`): register/update/delete webhooks with configurable event subscriptions and HMAC-signed delivery
+- `WEBHOOK_EVENTS` constants in shared package
+
+**4.4 – Performance & Reliability**
+- Database indexes on all high-traffic query paths (userId, artistId, status, startTime, style, etc.)
+- Rate limiting: global 100 req/15 min + stricter 20 req/15 min on `/auth` routes
+- Sentry error monitoring with request and error handler integration
+- Health check endpoint (`GET /health`)
+
 #### Phase 5 – Maturity & Ecosystem
 
 **5.1 – Enterprise & Chains**
