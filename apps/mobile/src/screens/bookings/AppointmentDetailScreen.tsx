@@ -39,6 +39,7 @@ export default function AppointmentDetailScreen({ navigation, route }: Props) {
   if (!appointment) return <View style={styles.container}><Text>Appointment not found</Text></View>;
 
   const canCancel = [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED].includes(appointment.status);
+  const canReview = appointment.status === AppointmentStatus.COMPLETED;
 
   return (
     <ScrollView style={styles.container}>
@@ -59,6 +60,17 @@ export default function AppointmentDetailScreen({ navigation, route }: Props) {
         <TouchableOpacity style={styles.aftercareBtn} onPress={() => navigation.navigate('Aftercare', { appointmentId })}>
           <Text style={styles.aftercareBtnText}>View Aftercare</Text>
         </TouchableOpacity>
+        {canReview && (
+          <TouchableOpacity
+            style={styles.reviewBtn}
+            onPress={() => navigation.navigate('ReviewSubmit', {
+              appointmentId,
+              artistName: `${appointment.artist.user.firstName} ${appointment.artist.user.lastName}`,
+            })}
+          >
+            <Text style={styles.reviewBtnText}>⭐ Leave a Review</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </ScrollView>
   );
@@ -75,4 +87,6 @@ const styles = StyleSheet.create({
   cancelBtnText: { color: '#ef4444', fontWeight: '600' },
   aftercareBtn: { backgroundColor: '#f0f0ff', borderRadius: 8, padding: 14, alignItems: 'center' },
   aftercareBtnText: { color: '#6366f1', fontWeight: '600' },
+  reviewBtn: { backgroundColor: '#fef9c3', borderRadius: 8, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: '#fde047' },
+  reviewBtnText: { color: '#92400e', fontWeight: '600' },
 });
