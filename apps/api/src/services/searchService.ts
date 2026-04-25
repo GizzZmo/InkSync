@@ -64,7 +64,7 @@ export async function searchArtists(query: {
   let results = artists;
 
   if (query.latitude !== undefined && query.longitude !== undefined && query.radiusKm !== undefined) {
-    results = artists.filter((artist) => {
+    results = artists.filter((artist: (typeof artists)[number]) => {
       if (artist.latitude === null || artist.longitude === null) return false;
       const dist = haversineKm(query.latitude!, query.longitude!, artist.latitude, artist.longitude);
       return dist <= query.radiusKm!;
@@ -93,6 +93,6 @@ export async function getTrendingArtists(limit = 10) {
   });
 
   return trending
-    .sort((a, b) => b._count.appointments - a._count.appointments)
+    .sort((a: (typeof trending)[number], b: (typeof trending)[number]) => b._count.appointments - a._count.appointments)
     .slice(0, limit);
 }

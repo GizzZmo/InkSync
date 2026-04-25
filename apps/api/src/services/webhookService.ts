@@ -3,6 +3,7 @@ import { AppError } from '../middleware/errorHandler';
 import { WEBHOOK_EVENTS } from '@inksync/shared';
 import crypto from 'crypto';
 import axios from 'axios';
+import type { Prisma } from '@prisma/client';
 
 export async function getWebhooks(userId: string) {
   return prisma.webhook.findMany({
@@ -73,7 +74,7 @@ export async function dispatchWebhook(userId: string, event: string, payload: Re
     }
 
     await prisma.webhookDelivery.create({
-      data: { webhookId: webhook.id, event, payload, responseStatus, responseBody, success },
+      data: { webhookId: webhook.id, event, payload: payload as Prisma.InputJsonValue, responseStatus, responseBody, success },
     }).catch(console.error);
   }
 }

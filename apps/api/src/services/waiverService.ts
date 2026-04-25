@@ -3,6 +3,7 @@ import { AppError } from '../middleware/errorHandler';
 import { WaiverStatus } from '@inksync/shared';
 import PDFDocument from 'pdfkit';
 import { uploadToS3 } from '../utils/s3Upload';
+import type { Prisma } from '@prisma/client';
 
 interface WaiverForPdf {
   template?: { title?: string; content?: string } | null;
@@ -11,7 +12,7 @@ interface WaiverForPdf {
     artist?: { user?: { firstName?: string; lastName?: string } | null } | null;
   } | null;
   signedAt?: Date | null;
-  medicalHistory?: Record<string, unknown> | null;
+  medicalHistory?: Prisma.JsonValue | null;
   signatureData?: string | null;
 }
 
@@ -69,7 +70,7 @@ export async function createWaiver(data: {
   appointmentId: string;
   templateId: string;
   clientId: string;
-  medicalHistory?: Record<string, unknown>;
+  medicalHistory?: Prisma.InputJsonValue;
 }) {
   const appointment = await prisma.appointment.findUnique({ where: { id: data.appointmentId } });
   if (!appointment) throw new AppError(404, 'Appointment not found');
@@ -83,7 +84,7 @@ export async function createWaiver(data: {
 
 export async function signWaiver(waiverId: string, clientId: string, data: {
   signatureData: string;
-  medicalHistory?: Record<string, unknown>;
+  medicalHistory?: Prisma.InputJsonValue;
 }) {
   const waiver = await prisma.waiver.findUnique({
     where: { id: waiverId },

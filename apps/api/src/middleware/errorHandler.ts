@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Sentry } from '../config/sentry';
 import { ZodError } from 'zod';
-import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export class AppError extends Error {
   constructor(
@@ -15,7 +15,7 @@ export class AppError extends Error {
 }
 
 export function errorHandler(
-  err: Error,
+  err: unknown,
   req: Request,
   res: Response,
   _next: NextFunction
@@ -41,7 +41,7 @@ export function errorHandler(
     return;
   }
 
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+  if (err instanceof PrismaClientKnownRequestError) {
     if (err.code === 'P2002') {
       res.status(409).json({
         success: false,
@@ -60,10 +60,11 @@ export function errorHandler(
     }
   }
 
+  const message = err instanceof Error ? err.message : 'Unknown error';
   console.error('Unhandled error:', err);
   res.status(500).json({
     success: false,
-    error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message,
+    error: process.env.NODE_ENV === 'production' ? 'Internal server error' : message,
   });
 }
 
