@@ -44,6 +44,10 @@ jobs:
           DATABASE_URL: postgresql://test:test@localhost:5432/inksync_test
         run: npx prisma generate
 
+      - name: Build shared (for API typings)
+        working-directory: packages/shared
+        run: npx tsc
+
       - name: Build API
         working-directory: apps/api
         env:
