@@ -36,6 +36,10 @@ import reviewRoutes from './routes/reviews';
 import searchRoutes from './routes/search';
 import apiKeyRoutes from './routes/apiKeys';
 import webhookManagementRoutes from './routes/webhookManagement';
+import enterpriseRoutes from './routes/enterprise';
+import communityRoutes from './routes/community';
+import i18nRoutes from './routes/i18n';
+import governanceRoutes from './routes/governance';
 
 // Initialize Sentry before everything else
 initSentry();
@@ -100,6 +104,12 @@ app.use('/reviews', reviewRoutes);
 app.use('/search', searchRoutes);
 app.use('/developer/api-keys', apiKeyRoutes);
 app.use('/developer/webhooks', webhookManagementRoutes);
+
+// Phase 5 Routes
+app.use('/enterprise', enterpriseRoutes);
+app.use('/community', communityRoutes);
+app.use('/i18n', i18nRoutes);
+app.use('/governance', governanceRoutes);
 
 // Sentry error handler must be before custom error handler
 app.use(Sentry.Handlers.errorHandler());

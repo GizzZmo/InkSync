@@ -207,35 +207,35 @@ This document is the single source of truth for the InkSync development plan. It
 ### Milestone 5.1 – Enterprise & Chains
 | Status | Task |
 |--------|------|
-| 🔲 | Enterprise tier for tattoo chains and franchises |
-| 🔲 | Centralized brand management (logos, pricing, service menus) |
-| 🔲 | Cross-location reporting and analytics |
-| 🔲 | White-label booking widget for studio websites |
+| ✅ | Enterprise tier for tattoo chains and franchises |
+| ✅ | Centralized brand management (logos, pricing, service menus) |
+| ✅ | Cross-location reporting and analytics |
+| ✅ | White-label booking widget for studio websites |
 
 ### Milestone 5.2 – Community & Education
 | Status | Task |
 |--------|------|
-| 🔲 | Artist blog / editorial content publishing |
-| 🔲 | Convention and event listing calendar |
-| 🔲 | Apprenticeship program listings |
-| 🔲 | InkSync Academy: tutorial/course hosting for artists |
+| ✅ | Artist blog / editorial content publishing |
+| ✅ | Convention and event listing calendar |
+| ✅ | Apprenticeship program listings |
+| ✅ | InkSync Academy: tutorial/course hosting for artists |
 
 ### Milestone 5.3 – Internationalization
 | Status | Task |
 |--------|------|
-| 🔲 | i18n framework integration (react-i18next) |
-| 🔲 | Localization for ES, DE, FR, PT, JA initial markets |
-| 🔲 | Multi-currency support (localized Stripe pricing) |
-| 🔲 | RTL layout support |
-| 🔲 | Regional compliance review (GDPR, LGPD) |
+| ✅ | i18n framework integration (i18n-js) |
+| ✅ | Localization for ES, DE, FR, PT, JA initial markets |
+| ✅ | Multi-currency support (localized Stripe pricing) |
+| ✅ | RTL layout support |
+| ✅ | Regional compliance review (GDPR, LGPD) |
 
 ### Milestone 5.4 – Platform Health & Governance
 | Status | Task |
 |--------|------|
-| 🔲 | Trust & Safety policy and reporting tools |
-| 🔲 | Artist verification / badge program |
-| 🔲 | Community guidelines and enforcement workflow |
-| 🔲 | Data export and account deletion (GDPR right to erasure) |
+| ✅ | Trust & Safety policy and reporting tools |
+| ✅ | Artist verification / badge program |
+| ✅ | Community guidelines and enforcement workflow |
+| ✅ | Data export and account deletion (GDPR right to erasure) |
 
 ---
 

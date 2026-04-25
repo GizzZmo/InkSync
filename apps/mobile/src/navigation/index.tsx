@@ -32,6 +32,9 @@ import StyleMatchScreen from '../screens/explore/StyleMatchScreen';
 import ARPreviewScreen from '../screens/ar/ARPreviewScreen';
 import ReviewSubmitScreen from '../screens/bookings/ReviewSubmitScreen';
 
+// Phase 5 screens
+import CommunityScreen from '../screens/community/CommunityScreen';
+
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -40,6 +43,7 @@ const BookingsStack = createNativeStackNavigator();
 const MessagesStack = createNativeStackNavigator();
 const MarketplaceStack = createNativeStackNavigator();
 const ExploreStack = createNativeStackNavigator();
+const CommunityStack = createNativeStackNavigator();
 
 function AuthNavigator() {
   return (
@@ -103,6 +107,14 @@ function MessagesNavigator() {
   );
 }
 
+function CommunityNavigator() {
+  return (
+    <CommunityStack.Navigator>
+      <CommunityStack.Screen name="CommunityScreen" component={CommunityScreen} options={{ title: 'Community' }} />
+    </CommunityStack.Navigator>
+  );
+}
+
 function MainTabs() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
@@ -111,6 +123,7 @@ function MainTabs() {
       <Tab.Screen name="Marketplace" component={MarketplaceNavigator} />
       <Tab.Screen name="Bookings" component={BookingsNavigator} />
       <Tab.Screen name="Messages" component={MessagesNavigator} />
+      <Tab.Screen name="Community" component={CommunityNavigator} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
