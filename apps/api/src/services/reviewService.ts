@@ -22,7 +22,7 @@ export async function getArtistReviews(artistId: string, query: { page?: number;
   ]);
 
   const averageRating = reviews.length > 0
-    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    ? reviews.reduce((sum: number, r: (typeof reviews)[number]) => sum + r.rating, 0) / reviews.length
     : 0;
 
   return { reviews, meta: buildPaginationMeta(total, { page, limit, skip }), averageRating: Math.round(averageRating * 10) / 10 };

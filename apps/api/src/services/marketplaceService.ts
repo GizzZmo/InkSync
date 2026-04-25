@@ -3,6 +3,7 @@ import { AppError } from '../middleware/errorHandler';
 import { TattooStyle } from '@inksync/shared';
 import { getPaginationOptions, buildPaginationMeta } from '../utils/pagination';
 import { getPresignedUploadUrl, deleteFromS3 } from '../utils/s3Upload';
+import type { Prisma } from '@prisma/client';
 
 export async function getFlashDesigns(query: {
   page?: number;
@@ -107,7 +108,7 @@ export async function purchaseFlashDesign(designId: string, clientId: string) {
   if (!design) throw new AppError(404, 'Flash design not found');
   if (design.status !== 'AVAILABLE') throw new AppError(400, 'Flash design is not available for purchase');
 
-  const purchase = await prisma.$transaction(async (tx) => {
+  const purchase = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.flashDesign.update({ where: { id: designId }, data: { status: 'SOLD' } });
     return tx.flashPurchase.create({
       data: { designId, clientId, amount: design.price },

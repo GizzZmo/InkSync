@@ -3,6 +3,7 @@ import { z } from 'zod';
 import * as waiverService from '../services/waiverService';
 import { getPresignedDownloadUrl } from '../utils/s3Upload';
 import { prisma } from '../config/database';
+import type { Prisma } from '@prisma/client';
 
 const createTemplateSchema = z.object({
   title: z.string().min(1),
@@ -60,7 +61,11 @@ export async function updateTemplate(req: Request, res: Response, next: NextFunc
 export async function createWaiver(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const data = createWaiverSchema.parse(req.body);
-    const waiver = await waiverService.createWaiver({ ...data, clientId: req.user!.userId });
+    const waiver = await waiverService.createWaiver({
+      ...data,
+      clientId: req.user!.userId,
+      medicalHistory: data.medicalHistory as Prisma.InputJsonValue | undefined,
+    });
     res.status(201).json({ success: true, data: waiver });
   } catch (err) {
     next(err);
@@ -79,7 +84,10 @@ export async function getWaiver(req: Request, res: Response, next: NextFunction)
 export async function signWaiver(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const data = signWaiverSchema.parse(req.body);
-    const waiver = await waiverService.signWaiver(req.params.id, req.user!.userId, data);
+    const waiver = await waiverService.signWaiver(req.params.id, req.user!.userId, {
+      ...data,
+      medicalHistory: data.medicalHistory as Prisma.InputJsonValue | undefined,
+    });
     res.json({ success: true, data: waiver });
   } catch (err) {
     next(err);

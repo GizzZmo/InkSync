@@ -71,9 +71,15 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm install --workspaces --if-present
-      - name: TypeScript check (API)
+      - name: Generate Prisma client
         working-directory: apps/api
-        run: npx tsc --noEmit
+        run: npx prisma generate
       - name: TypeScript check (shared)
         working-directory: packages/shared
+        run: npx tsc --noEmit
+      - name: Build shared (for API typings)
+        working-directory: packages/shared
+        run: npx tsc
+      - name: TypeScript check (API)
+        working-directory: apps/api
         run: npx tsc --noEmit

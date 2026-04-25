@@ -1,6 +1,15 @@
 import { prisma } from '../config/database';
 import { AppError } from '../middleware/errorHandler';
 import { getPaginationOptions, buildPaginationMeta } from '../utils/pagination';
+import { Prisma } from '@prisma/client';
+
+type EnterpriseWithMembers = Prisma.EnterpriseAccountGetPayload<{
+  include: { members: true };
+}>;
+
+type EnterpriseWithMembersAndStudios = Prisma.EnterpriseAccountGetPayload<{
+  include: { brand: true; members: { include: { studio: true } } };
+}>;
 
 function toSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -66,7 +75,7 @@ export async function upsertBrand(enterpriseId: string, ownerId: string, data: {
   primaryColor?: string;
   secondaryColor?: string;
   fontFamily?: string;
-  serviceMenu?: unknown;
+  serviceMenu?: Prisma.InputJsonValue;
   depositPolicy?: string;
   cancellationPolicy?: string;
   widgetEnabled?: boolean;
@@ -113,14 +122,14 @@ export async function getEnterpriseAnalytics(enterpriseId: string, ownerId: stri
   startDate?: Date;
   endDate?: Date;
 }) {
-  const enterprise = await prisma.enterpriseAccount.findUnique({
+  const enterprise: EnterpriseWithMembers | null = await prisma.enterpriseAccount.findUnique({
     where: { id: enterpriseId },
     include: { members: true },
   });
   if (!enterprise) throw new AppError(404, 'Enterprise not found');
   if (enterprise.ownerId !== ownerId) throw new AppError(403, 'Not authorized');
 
-  const studioIds = enterprise.members.map((m) => m.studioId);
+  const studioIds = enterprise.members.map((m: EnterpriseWithMembers['members'][number]) => m.studioId);
 
   const where = {
     studioId: { in: studioIds },
@@ -154,7 +163,7 @@ export async function getEnterpriseAnalytics(enterpriseId: string, ownerId: stri
     byStudio[key].appointments += 1;
   }
   for (const pmt of payments) {
-    const appt = appointments.find((a) => a.id === pmt.appointmentId);
+    const appt = appointments.find((a: (typeof appointments)[number]) => a.id === pmt.appointmentId);
     if (appt) {
       const key = appt.studioId ?? 'unassigned';
       if (byStudio[key]) byStudio[key].revenue += Number(pmt.amount);
@@ -164,7 +173,7 @@ export async function getEnterpriseAnalytics(enterpriseId: string, ownerId: stri
   return {
     totalLocations: studioIds.length,
     totalAppointments: appointments.length,
-    totalRevenue: payments.reduce((s, p) => s + Number(p.amount), 0),
+    totalRevenue: payments.reduce((s: number, p: (typeof payments)[number]) => s + Number(p.amount), 0),
     byLocation: Object.values(byStudio),
   };
 }
@@ -172,7 +181,7 @@ export async function getEnterpriseAnalytics(enterpriseId: string, ownerId: stri
 // ── Widget Config ───────────────────────────────────────────────────────────
 
 export async function getWidgetConfig(slug: string) {
-  const enterprise = await prisma.enterpriseAccount.findUnique({
+  const enterprise: EnterpriseWithMembersAndStudios | null = await prisma.enterpriseAccount.findUnique({
     where: { slug },
     include: { brand: true, members: { include: { studio: true } } },
   });
@@ -181,7 +190,7 @@ export async function getWidgetConfig(slug: string) {
   return {
     name: enterprise.name,
     brand: enterprise.brand,
-    studios: enterprise.members.map((m) => ({
+    studios: enterprise.members.map((m: EnterpriseWithMembersAndStudios['members'][number]) => ({
       id: m.studio.id,
       name: m.studio.name,
       city: m.studio.city,
